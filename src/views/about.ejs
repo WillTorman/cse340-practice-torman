@@ -1,13 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About</title>
-    <link rel="stylesheet" href="/css/main.css">
-</head>
-<body>
-    <h1>About Me</h1>
+<%- include('partials/header') %>
+<main>
+    <h1><%= title %></h1>
+    <!-- Put your page-specific content here --><body>
     <h1 class="name">William Torman</h1>
     <p class="intro">I like to build computers and write code.</p>
     <ul>
@@ -25,4 +19,6 @@
     </nav>
     <p>[Add some content specific to this page]</p>
 </body>
-</html>
+     
+</main>
+<%- include('partials/footer') %>
