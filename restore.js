@@ -1,3 +1,4 @@
+// to run: "node restore.js 3000 3001"
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import readline from 'readline';
