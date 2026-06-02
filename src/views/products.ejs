@@ -3,5 +3,12 @@
     <h1><%= title %></h1>
     <!-- Put your page-specific content here -->
      <p>page specific stuff here</p>
+    <section>
+        <h2>Query Parameters (for debugging)</h2>
+        <p>Object form:</p>
+        <pre><%= JSON.stringify(queryParams, null, 2) %></pre>
+        <p>JSON string form:</p>
+        <pre><%= queryParamsJson %></pre>
+    </section>
 </main>
 <%- include('partials/footer') %>
