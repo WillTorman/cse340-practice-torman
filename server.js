@@ -169,7 +169,7 @@ app.get('/about', (req, res) => {
 });
 
 /**
- * Error handlingf
+ * Error handling
  */
 
 // Test route for 500 errors
