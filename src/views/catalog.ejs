@@ -1,0 +1,18 @@
+<%- include('partials/header') %>
+<main>
+    <h1><%= title %></h1>
+    <p>Browse the available courses below and open a course to view its section details.</p>
+
+    <div class="catalog-grid">
+        <% Object.values(courses).forEach((course) => { %>
+            <article class="course-card">
+                <h2><a href="/catalog/<%= course.id %>"><%= course.id %>: <%= course.title %></a></h2>
+                <p><strong>Department:</strong> <%= course.department %></p>
+                <p><strong>Credits:</strong> <%= course.credits %></p>
+                <p><%= course.description %></p>
+            </article>
+        <% }) %>
+    </div>
+
+</main>
+<%- include('partials/footer') %>

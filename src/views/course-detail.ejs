@@ -1,0 +1,40 @@
+<%- include('partials/header') %>
+<main>
+    <h1><%= course.id %>: <%= course.title %></h1>
+
+    <section class="course-summary">
+        <p><strong>Department:</strong> <%= course.department %></p>
+        <p><strong>Credits:</strong> <%= course.credits %></p>
+        <p><%= course.description %></p>
+    </section>
+
+    <section class="section-sorting">
+        <h2>Sections</h2>
+        <p>
+            Sort by:
+            <a href="/catalog/<%= course.id %>">Time</a> |
+            <a href="/catalog/<%= course.id %>?sort=professor">Professor</a> |
+            <a href="/catalog/<%= course.id %>?sort=room">Room</a>
+        </p>
+    </section>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Room</th>
+                <th>Professor</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% course.sections.forEach((section) => { %>
+                <tr>
+                    <td><%= section.time %></td>
+                    <td><%= section.room %></td>
+                    <td><%= section.professor %></td>
+                </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</main>
+<%- include('partials/footer') %>

@@ -1,214 +1,109 @@
-import { fileURLToPath } from "url";
-import path from "path";
-// Import express using ESM syntax
 import express from "express";
-import { title } from "process";
+import path from "path";
+import { fileURLToPath } from "url";
 
+// Import MVC components
+import routes from "./src/controllers/routes.js";
+import { addLocalVariables } from "./src/middleware/global.js";
+
+/**
+ * Server configuration
+ */
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const NODE_ENV = process.env.NODE_ENV?.toLowerCase() || "production";
+const PORT = process.env.PORT || 3000;
 
-// Create an instance of an Express application
+/**
+ * Setup Express Server
+ */
 const app = express();
 
 /**
- * Configure Express middleware
+ * Configure Express
  */
-
-// Serve static files from the public directory
-app.use(express.static(path.join(__dirname, 'public')));
-
-const name = process.env.NAME;
-
-// Define the port number the server will listen on
-// const PORT = 3000;
-const NODE_ENV = process.env.NODE_ENV || "production";
-const PORT = process.env.PORT || 3000;
-
-// When in development mode, start a WebSocket server for live reloading
-if (NODE_ENV.includes('dev')) {
-    const ws = await import('ws');
-
-    try {
-        const wsPort = parseInt(PORT) + 1;
-        const wsServer = new ws.WebSocketServer({ port: wsPort });
-
-        wsServer.on('listening', () => {
-            console.log(`WebSocket server is running on port ${wsPort}`);
-        });
-
-        wsServer.on('error', (error) => {
-            console.log('WebSocket server error:', error);
-        });
-    } catch (error) {
-        console.error('Failed to start WebSocket server:', error);
-    }
-}
-
-// Start the server and listen on the specified port
-app.listen(PORT, () => {
-  console.log(`Server is running on http://127.0.0.1:${PORT}`);
-});
-
-
-// Set EJS as the templating engine
-app.set('view engine', 'ejs');
-
-// Tell Express where to find your templates
-app.set('views', path.join(__dirname, 'src/views'));
+app.use(express.static(path.join(__dirname, "public")));
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "src/views"));
 
 /**
- * Global template variables middleware
- * 
- * Makes common variables available to all EJS templates without having to pass
- * them individually from each route handler
+ * Global Middleware
  */
-app.use((req, res, next) => {
-    // Make NODE_ENV global
-    res.locals.NODE_ENV = NODE_ENV.toLocaleLowerCase() || 'production';
-
-    // Continue to the next middleware or route handler
-    next();
-});
-
-app.use((req, res, next) => {
-  // Skip logging for routes that start with /. (like /.well-known/)
-  if (!req.path.startsWith("/.")) {
-    console.log(`${req.method} ${req.url}`);
-  }
-  next(); // Pass control to the next middleware or route
-});
-
-// Middleware to add global data to all templates
-app.use((req, res, next) => {
-    // Add current year for copyright
-    res.locals.currentYear = new Date().getFullYear();
-
-    next();
-});
-
-// Global middleware for time-based greeting
-app.use((req, res, next) => {
-    const currentHour = new Date().getHours();
-
-    res.locals.currentHour = currentHour;
-
-    if (currentHour < 12) {
-        res.locals.greeting = "Good Morning";
-    } else if (currentHour <= 17) {
-        res.locals.greeting = "Good Afternoon";
-    } else {
-        res.locals.greeting = "Good Evening";
-    }
-
-    next();
-});
-
-// Global middleware for random theme selection
-app.use((req, res, next) => {
-    const themes = ['blue-theme', 'green-theme', 'red-theme'];
-
-    // Pick a random theme from the array
-    const randomTheme = themes[Math.floor(Math.random() * themes.length)];
-    res.locals.bodyClass = randomTheme;
-
-    next();
-});
-
-// Global middleware to share query parameters with templates
-app.use((req, res, next) => {
-    // Make req.query available to all templates for debugging and conditional rendering
-    res.locals.queryParams = req.query || {};
-    try {
-        // Also provide a JSON string for easy display in templates
-        res.locals.queryParamsJson = JSON.stringify(res.locals.queryParams, null, 2);
-    } catch (err) {
-        res.locals.queryParamsJson = '{}';
-    }
-
-    next();
-});
-
-
-// Route-specific middleware that sets custom headers
-const addDemoHeaders = (req, res, next) => {
-    // Set custom response headers for this demo route
-    res.setHeader('X-Demo-Page', 'true');
-    res.setHeader('X-Middleware-Demo', 'Middleware demo brooo');
-
-    // Also expose the same data to templates so the page can display it
-    res.locals.demoHeaders = {
-        'X-Demo-Page': 'true',
-        'X-Middleware-Demo': 'Middleware demo active'
-    };
-
-    // Expose request headers too for verification/debugging
-    res.locals.requestHeaders = req.headers || {};
-
-    next();
-};
-
-
-// Demo page route with header middleware
-app.get('/demo', addDemoHeaders, (req, res) => {
-    res.render('demo', {
-        title: 'Middleware Demo Page'
-    });
-});
+app.use(addLocalVariables);
 
 /**
  * Routes
  */
-app.get('/', (req, res) => {
-    const title = 'Welcome Home';
-    res.render('home', { title });
-});
-
-app.get('/about', (req, res) => {
-    const title = 'About Me';
-    res.render('about', { title });
-});
+app.use("/", routes);
 
 /**
- * Error handling
+ * Error Handling
  */
 
-// Test route for 500 errors
-app.get('/test-error', (req, res, next) => {
-    const err = new Error('This is a test error');
-    err.status = 500;
-    next(err);
-});
-
-// Catch-all route for 404 errors
+// 404 handler
 app.use((req, res, next) => {
-    const err = new Error('Page Not Found');
-    err.status = 404;
-    next(err);
+  const err = new Error("Page Not Found");
+  err.status = 404;
+  next(err);
 });
 
 // Global error handler
 app.use((err, req, res, next) => {
-    // Prevent infinite loops, if a response has already been sent, do nothing
-    if (res.headersSent || res.finished) {
-        return next(err);
+  // Prevent infinite loops, if a response has already been sent, do nothing
+  if (res.headersSent || res.finished) {
+    return next(err);
+  }
+
+  // Determine status and template
+  const status = err.status || 500;
+  const template = status === 404 ? "404" : "500";
+
+  // Prepare data for the template
+  const context = {
+    title: status === 404 ? "Page Not Found" : "Server Error",
+    error: NODE_ENV === "production" ? "An error occurred" : err.message,
+    stack: NODE_ENV === "production" ? null : err.stack,
+    NODE_ENV, // Our WebSocket check needs this and its convenient to pass along
+  };
+
+  // Render the appropriate error template with fallback
+  try {
+    res.status(status).render(`errors/${template}`, context);
+  } catch (renderErr) {
+    // If rendering fails, send a simple error page instead
+    if (!res.headersSent) {
+      res
+        .status(status)
+        .send(`<h1>Error ${status}</h1><p>An error occurred.</p>`);
     }
-    // Determine status and template
-    const status = err.status || 500;
-    const template = status === 404 ? '404' : '500';
-    // Prepare data for the template
-    const context = {
-        title: status === 404 ? 'Page Not Found' : 'Server Error',
-        error: NODE_ENV === 'production' ? 'An error occurred' : err.message,
-        stack: NODE_ENV === 'production' ? null : err.stack,
-        NODE_ENV // Our WebSocket check needs this and its convenient to pass along
-    };
-    // Render the appropriate error template with fallback
-    try {
-        res.status(status).render(`errors/${template}`, context);
-    } catch (renderErr) {
-        // If rendering fails, send a simple error page instead
-        if (!res.headersSent) {
-            res.status(status).send(`<h1>Error ${status}</h1><p>An error occurred.</p>`);
-        }
-    }
+  }
+});
+
+/**
+ * Start WebSocket Server in Development Mode; used for live reloading
+ */
+if (NODE_ENV.includes("dev")) {
+  const ws = await import("ws");
+
+  try {
+    const wsPort = parseInt(PORT) + 1;
+    const wsServer = new ws.WebSocketServer({ port: wsPort });
+
+    wsServer.on("listening", () => {
+      console.log(`WebSocket server is running on port ${wsPort}`);
+    });
+
+    wsServer.on("error", (error) => {
+      console.error("WebSocket server error:", error);
+    });
+  } catch (error) {
+    console.error("Failed to start WebSocket server:", error);
+  }
+}
+
+/**
+ * Start Server
+ */
+app.listen(PORT, () => {
+  console.log(`Server is running on http://127.0.0.1:${PORT}`);
 });
