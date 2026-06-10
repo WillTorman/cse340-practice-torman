@@ -24,7 +24,7 @@ const courseDetailPage = (req, res, next) => {
     const err = new Error(`Course ${courseId} not found`);
     err.status = 404;
     return next(err);
-  }
+  };
 
   // Handle sorting if requested
   const sortBy = req.query.sort || "time";
