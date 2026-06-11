@@ -2,15 +2,17 @@ import {
   getFacultyById,
   getSortedFaculty,
   getAllFaculty,
-} from "../../models/faculty/faculty";
+} from "../../models/faculty/faculty.js";
 
 const facultyListPage = (req, res) => {
-  // TODO: render faculty list page
-  const faculty = getAllFaculty();
+  const sortBy = req.query.sort || "name";
+  const faculty = getSortedFaculty(sortBy);
 
-  res.render("faculty", {
-    title: "Name",
+  res.render("faculty/list", {
+    title: "Faculty Directory",
     faculty: faculty,
+    currentSort: sortBy,
+    stylesheets: ["/css/faculty.css"],
   });
 };
 
@@ -24,16 +26,12 @@ const facultyDetailPage = (req, res, next) => {
     const err = new Error(`Faculty ${facultyId} not found`);
     err.status = 404;
     return next(err);
-  };
+  }
 
-  // handle sorting if requested
-  const sortBy = req.params.sort || "name";
-  const sortedFaculty = getSortedFaculty(faculty.name, sortBy);
-
-  res.render("faculty-detail", {
+  res.render("faculty/detail", {
     title: `${faculty.name} - ${faculty.title}`,
-    department: { ...faculty, department: sortedFaculty },
-    currentSort: sortBy,
+    faculty: faculty,
+    stylesheets: ["/css/faculty.css"],
   });
 };
 
