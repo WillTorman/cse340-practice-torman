@@ -4,3 +4,9 @@ Practice project for CSE 340: Fall 2026
 ## To start the server
 1. run `node server.js`
 2. Open your browser and navigate to `http://127.0.0.1:3000`
+
+<!-- Start the server in production; this will not load .env locally -->
+npm run start
+
+<!-- Start the server in development -->
+npm run dev
