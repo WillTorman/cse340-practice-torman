@@ -1,5 +1,5 @@
 # cse340-practice-torman
-Practice project for CSE 340
+Practice project for CSE 340: Fall 2026
 
 ## To start the server
 1. run `node server.js`
