@@ -1,10 +1,10 @@
 <%- include('partials/header') %>
 <main>
-    <h1><%= course.id %>: <%= course.title %></h1>
+    <h1><%= course.courseCode %>: <%= course.name %></h1>
 
     <section class="course-summary">
         <p><strong>Department:</strong> <%= course.department %></p>
-        <p><strong>Credits:</strong> <%= course.credits %></p>
+        <p><strong>Credits:</strong> <%= course.creditHours %></p>
         <p><%= course.description %></p>
     </section>
 
@@ -12,9 +12,9 @@
         <h2>Sections</h2>
         <p>
             Sort by:
-            <a href="/catalog/<%= course.id %>">Time</a> |
-            <a href="/catalog/<%= course.id %>?sort=professor">Professor</a> |
-            <a href="/catalog/<%= course.id %>?sort=room">Room</a>
+            <a href="/catalog/<%= course.slug %>" class="<%= currentSort === 'time' ? 'active' : '' %>">Time</a> |
+            <a href="/catalog/<%= course.slug %>?sort=professor" class="<%= currentSort === 'professor' ? 'active' : '' %>">Professor</a> |
+            <a href="/catalog/<%= course.slug %>?sort=room" class="<%= currentSort === 'room' ? 'active' : '' %>">Room</a>
         </p>
     </section>
 
@@ -27,13 +27,19 @@
             </tr>
         </thead>
         <tbody>
-            <% course.sections.forEach((section) => { %>
+            <% if (sections.length === 0) { %>
                 <tr>
-                    <td><%= section.time %></td>
-                    <td><%= section.room %></td>
-                    <td><%= section.professor %></td>
+                    <td colspan="3">No sections available.</td>
                 </tr>
-            <% }) %>
+            <% } else { %>
+                <% sections.forEach((section) => { %>
+                    <tr>
+                        <td><%= section.time %></td>
+                        <td><%= section.room %></td>
+                        <td><%= section.professor %></td>
+                    </tr>
+                <% }) %>
+            <% } %>
         </tbody>
     </table>
 </main>

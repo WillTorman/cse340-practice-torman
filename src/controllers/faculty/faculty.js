@@ -18,7 +18,7 @@ const facultyListPage = async (req, res) => {
 };
 
 const facultyDetailPage = async (req, res, next) => {
-  const facultySlug = req.params.facultySlug;
+  const facultySlug = req.params.slugId;
   const facultyMember = await getFacultyBySlug(facultySlug);
 
   if (Object.keys(facultyMember).length === 0) {

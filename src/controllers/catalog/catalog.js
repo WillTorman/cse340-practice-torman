@@ -32,7 +32,7 @@ const courseDetailPage = async (req, res, next) => {
   // Get sections (course offerings) separately from the catalog
   // Pass the sortBy parameter directly to the model - PostgreSQL handles the sorting
   const sortBy = req.query.sort || "time";
-  const sections = await getSectionsByCourseSlug(courseSlug, sortyBy);
+  const sections = await getSectionsByCourseSlug(courseSlug, sortBy);
 
   res.render("course-detail", {
     title: `${course.courseCode} - ${course.name}`,
