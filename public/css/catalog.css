@@ -1,0 +1,60 @@
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.course-card,
+.course-summary {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  background: #fff;
+}
+
+.course-card h2 {
+  margin-top: 0;
+}
+
+.course-card a,
+.section-sorting a {
+  color: #2c5aa0;
+  text-decoration: none;
+}
+
+.course-card a:hover,
+.section-sorting a:hover {
+  text-decoration: underline;
+}
+
+.section-sorting {
+  max-width: 800px;
+  margin: 0 auto 1.5rem;
+}
+
+.section-sorting .active {
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+table {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  border-collapse: collapse;
+  background: #fff;
+}
+
+th,
+td {
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+th {
+  background: #2c5aa0;
+  color: #fff;
+}
