@@ -31,14 +31,14 @@ const setupDatabase = async () => {
 
   if (hasData) {
     console.log("Database already seeded");
-    return true;
+  } else {
+    // No faculty found - run full seed
+    console.log("Seeding database...");
+    const seedPath = join(__dirname, "sql", "seed.sql");
+    const seedSQL = fs.readFileSync(seedPath, "utf8");
+    await db.query(seedSQL);
   }
 
-  // No faculty found - run full seed
-  console.log("Seeding database...");
-  const seedPath = join(__dirname, "sql", "seed.sql");
-  const seedSQL = fs.readFileSync(seedPath, "utf8");
-  await db.query(seedSQL);
   // Run practice.sql if it exists (for student assignments)
   const practicePath = join(__dirname, "sql", "practice.sql");
   if (fs.existsSync(practicePath)) {
